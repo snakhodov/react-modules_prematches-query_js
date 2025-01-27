@@ -2,7 +2,7 @@ import {useQuery} from "react-query";
 import {useParams } from 'react-router-dom';
 
 
-function PrematchesQuery({children}) {
+export const PrematchesQuery = ({children}) => {
     let {branchId, sportId, categoryId, tournamentId} = useParams();
 
     const hours = (hours) =>
@@ -66,5 +66,3 @@ function PrematchesQuery({children}) {
         </div>
     );
 }
-
-export default PrematchesQuery;
