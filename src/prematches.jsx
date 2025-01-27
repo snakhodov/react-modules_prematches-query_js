@@ -3,24 +3,25 @@ import {BrowserRouter, Route, Routes} from 'react-router-dom';
 
 import {PrematchesQuery} from "./components/prematches-query.jsx";
 
-import './App.css';
-
 
 const queryClient = new QueryClient();
 
-function App() {
+function Prematches() {
     return (
         <QueryClientProvider client={queryClient}>
             <BrowserRouter>
                 <Routes>
-                    <Route path="/sport" element={<PrematchesQuery />} />
-                    <Route path="/sport/:branchId" element={<PrematchesQuery />} />
-                    <Route path="/sport/:branchId/:sportId" element={<PrematchesQuery />} />
-                    <Route path="*" element={<Main />}/>
+                    <Route path="/sport" element={<PrematchesQuery children={children}/>}/>
+                    <Route path="/sport/:branchId" element={<PrematchesQuery children={children}/>}/>
+                    <Route path="/sport/:branchId/:sportId" element={<PrematchesQuery children={children}/>}/>
+                    <Route path="/sport/:branchId/:sportId/:categoryId"
+                           element={<PrematchesQuery children={children}/>}/>
+                    <Route path="/sport/:branchId/:sportId/:categoryId/:tournamentId"
+                           element={<PrematchesQuery children={children}/>}/>
                 </Routes>
             </BrowserRouter>
         </QueryClientProvider>
     )
 }
 
-export default App;
+export default Prematches;
