@@ -6,7 +6,7 @@ import {PrematchesQuery} from "./components/prematches-query.jsx";
 
 const queryClient = new QueryClient();
 
-function Prematches() {
+function Prematches({children}) {
     return (
         <QueryClientProvider client={queryClient}>
             <BrowserRouter>
