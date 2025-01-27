@@ -1,5 +1,5 @@
 import {useQuery} from "react-query";
-import {useParams } from 'react-router-dom';
+import {useParams} from 'react-router-dom';
 
 
 export const PrematchesQuery = ({children}) => {
@@ -62,7 +62,7 @@ export const PrematchesQuery = ({children}) => {
 
     return (
         <div>
-            {React.cloneElement(children, { data: topMatches })}
+            {React.cloneElement(children, {data: topMatches})}
         </div>
     );
 }
