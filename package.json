@@ -15,6 +15,9 @@
         "react-query": "^3.39.3",
         "react-router": "^6.16.0",
         "react-router-dom": "^6.16.0",
+        "mobx": "^6.10.2",
+        "mobx-react": "^9.0.1",
+        "mobx-state-tree": "^5.2.0",
         "sass": "^1.68.0"
     },
     "devDependencies": {

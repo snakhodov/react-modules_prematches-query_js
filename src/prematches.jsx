@@ -1,27 +1,36 @@
-import {QueryClient, QueryClientProvider} from "react-query";
-import {BrowserRouter, Route, Routes} from 'react-router-dom';
+import React from 'react';
+import {inject, observer} from 'mobx-react';
+import {BrowserRouter, Routes, Route} from 'react-router-dom';
 
-import {PrematchesQuery} from "./components/prematches-query.jsx";
+import Qwe from './components/prematches-query.jsx';
+
+import './App.css';
 
 
-const queryClient = new QueryClient();
+// function Prematches({prematchesStore: {activeBranch, activeItems}}) {
+//     // const [isLoading, setLoading] = useState(true);
+//
+//     return <BrowserRouter
+//         future={{
+//             v7_startTransition: true,
+//             v7_relativeSplatPath: true,
+//         }}
+//     >
+//         <Routes>
+//             <Route path="/" element={<Qwe loading={activeBranch.initialFetching}/>}/>
+//             <Route path="/sport" element={<Qwe loading={activeBranch.initialFetching}/>}/>
+//             <Route path="/sport/:branchId" element={<Qwe loading={activeBranch.initialFetching}/>}/>
+//             <Route path="/sport/:branchId/:sportId" element={<Qwe loading={activeBranch.initialFetching}/>}/>
+//             <Route path="/sport/:branchId/:sportId/:categoryId" element={<Qwe loading={activeBranch.initialFetching}/>}/>
+//             <Route path="/sport/:branchId/:sportId/:categoryId/:tournamentId" element={<Qwe loading={activeBranch.initialFetching}/>}/>
+//             <Route path="/sport/:branchId/:sportId/:categoryId/:tournamentId/:matchId" element={<Qwe loading={activeBranch.initialFetching}/>}/>
+//             <Route path="*" element={<Qwe loading={activeBranch.initialFetching}/>}/>
+//         </Routes>
+//     </BrowserRouter>;
+// }
 
-function Prematches({children}) {
-    return (
-        <QueryClientProvider client={queryClient}>
-            <BrowserRouter>
-                <Routes>
-                    <Route path="/sport" element={<PrematchesQuery children={children}/>}/>
-                    <Route path="/sport/:branchId" element={<PrematchesQuery children={children}/>}/>
-                    <Route path="/sport/:branchId/:sportId" element={<PrematchesQuery children={children}/>}/>
-                    <Route path="/sport/:branchId/:sportId/:categoryId"
-                           element={<PrematchesQuery children={children}/>}/>
-                    <Route path="/sport/:branchId/:sportId/:categoryId/:tournamentId"
-                           element={<PrematchesQuery children={children}/>}/>
-                </Routes>
-            </BrowserRouter>
-        </QueryClientProvider>
-    )
-}
+const Prematches = ({children}) => {
+    return <>{children}</>
+};
 
-export default Prematches;
+export default inject('prematchesStore')(observer(Prematches));

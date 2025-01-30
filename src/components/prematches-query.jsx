@@ -1,69 +1,33 @@
-import React from 'react';
-import {useQuery} from "react-query";
-import {useParams} from 'react-router-dom';
+import {useParams} from "react-router-dom";
+import React, {useEffect} from "react";
+import {inject, observer} from "mobx-react";
 
-
-export const PrematchesQuery = ({children}) => {
-    let {branchId, sportId, categoryId, tournamentId} = useParams();
-
-    const hours = (hours) =>
-        parseInt(
-            new Date(new Date().setHours(new Date().getHours() + hours)).setSeconds(0) / 1000
-        );
-
-    const allTo = () =>
-        new Date(
-            new Date(new Date().setFullYear(new Date().getFullYear() + 1)).setSeconds(0)
-        );
-
-    const branchConfig = {
-        1: {
-            label: 'All',
-            to: () => Math.floor(allTo().setDate(allTo().getDate() - 1) / 1000),
+const Qwe = (
+    {
+        prematchesStore: {
+            activeBranch,
+            activeItems,
         },
-        2: {
-            label: 'Today',
-            to: () => parseInt(new Date().setHours(23, 59, 59, 999) / 1000),
-        },
-        3: {
-            label: '12 Hour',
-            to: () => hours(12),
-        },
-        4: {
-            label: '3 Hour',
-            to: () => hours(3),
-        },
-        5: {
-            label: '1 Hour',
-            to: () => hours(1),
-        },
-    };
+        loading
+    }
+) => {
+    let {branchId, sportId, categoryId, tournamentId, matchId} = useParams();
 
-    const {data: topMatches, isLoading} = useQuery({
-        queryKey: ['topMatches', branchId],
-        queryFn: async () => {
-            const res = await apiRequest({
-                    url: 'topMatches',
-                    method: 'post',
-                    body: {
-                        to: branchConfig[branchId]?.to(),
-                    }
-                }
-            );
-            if (!res || res.error) {
-                console.error(res?.error ?? 'error')
-            }
-            return res.data;
-        },
-        staleTime: Infinity,
-        enabled: branchId !== undefined,
-    });
+    useEffect(() => {
+        activeItems.setActiveItems({branchId, sportId, categoryId, tournamentId, matchId})
+    }, [branchId, sportId, categoryId, tournamentId, matchId]);
 
-    if (isLoading) return <div>Loading...</div>
-
-    return (
-        <div>
-            {React.cloneElement(children, {data: topMatches})}
-        </div>
-    );
+    return (loading ? <p>Loading...</p> : (
+        <ul>{activeBranch.sportsList.map(sport => <li key={sport.id}>
+            <span>{sport.name}</span>
+            -
+            <span>{sport.matchCount}</span>
+            {sport.categoriesList.length ? <ul>{sport.categoriesList.map(item => <li key={item.id}>
+                <span>{item.name}</span>
+                -
+                <span>{item.matchCount}</span></li>)}</ul> : null}
+        </li>)}</ul>
+    ));
 }
+
+export default inject('prematchesStore')(observer(Qwe));
