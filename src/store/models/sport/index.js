@@ -1,4 +1,4 @@
-import {getRoot, types} from 'mobx-state-tree';
+import {getParent, getRoot, types} from 'mobx-state-tree';
 import {reaction, values} from 'mobx';
 
 import {FetchStates} from "../compose-models/fetch-states.js";
@@ -77,4 +77,7 @@ export const Sport = types
             const activeCategoryId = getRoot(self).activeItems.categoryId;
             return self.categories.get(activeCategoryId);
         },
+        get link() {
+            return getParent(self, 2).link + '/' + self.id;
+        }
     }))

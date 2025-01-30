@@ -1,16 +1,17 @@
-import {getRoot, types} from 'mobx-state-tree';
+import {getParent, getRoot, types} from 'mobx-state-tree';
 import {reaction, values} from 'mobx';
 
 import {FetchStates} from "../compose-models/fetch-states.js";
 import {BaseItem} from "../compose-models/base-item.js";
 import {branchFetches} from "../branch/fetches/index.js";
 import {refreshTime} from "../../configs/refresh-time.js";
+import {Tournament} from "../tourmanent/index.js";
 
 export const Category = types
     .model('Category', {
-        id: types.identifierNumber,
+        id: types.identifier,
         parentId: types.maybeNull(types.string),
-        tournaments: types.map(types.compose(BaseItem, FetchStates))
+        tournaments: types.map(types.compose(Tournament, BaseItem, FetchStates))
     })
     .extend((self) => ({actions: {...branchFetches(self).tournaments}}))
     .actions((self => {
@@ -72,4 +73,7 @@ export const Category = types
             const activeTournamentId = getRoot(self).activeItems.tournamentId;
             return self.tournaments.get(activeTournamentId);
         },
+        get link() {
+            return getParent(self, 2).link + '/' + self.id;
+        }
     }))

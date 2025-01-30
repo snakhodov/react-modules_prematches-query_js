@@ -25,6 +25,8 @@ const ActiveItems = types
             if (categoryId) {
                 const categoryIds = categoryId.split('-');
                 self.categoryId = categoryIds[categoryIds.length - 1];
+            } else {
+
             }
             if (sportId) {
                 const sportIds = sportId.split('-');

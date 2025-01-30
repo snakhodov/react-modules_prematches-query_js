@@ -66,4 +66,7 @@ export const Branch = types
             const activeSportId = getRoot(self).activeItems.sportId;
             return self.sports.get(activeSportId);
         },
+        get link() {
+            return '/pre/' + self.id;
+        }
     }))

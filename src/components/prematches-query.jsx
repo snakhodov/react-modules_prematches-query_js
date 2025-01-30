@@ -20,12 +20,12 @@ const Qwe = (
     return (loading ? <p>Loading...</p> : (
         <ul>{activeBranch.sportsList.map(sport => <li key={sport.id}>
             <span>{sport.name}</span>
-            -
-            <span>{sport.matchCount}</span>
+            <span> - </span>
+            <span>{sport.link}</span>
             {sport.categoriesList.length ? <ul>{sport.categoriesList.map(item => <li key={item.id}>
                 <span>{item.name}</span>
-                -
-                <span>{item.matchCount}</span></li>)}</ul> : null}
+                <span> - </span>
+                <span>{item.link}</span></li>)}</ul> : null}
         </li>)}</ul>
     ));
 }
