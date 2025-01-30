@@ -1,6 +1,7 @@
 import React, {useEffect} from "react";
 import {inject, observer} from "mobx-react";
 import {Link, useParams} from "react-router-dom";
+import {BranchPicker} from "./branch-picker.jsx";
 
 const Qwe = (
     {
@@ -16,7 +17,8 @@ const Qwe = (
         activeItems.setActiveItems({branchId, sportId, categoryId, tournamentId, matchId})
     }, [branchId, sportId, categoryId, tournamentId, matchId]);
 
-    return (activeBranch.initialFetching ? <p>Loading...</p> : (
+    return (activeBranch.initialFetching ? <p>Loading...</p> : (<>
+        <BranchPicker/>
         <ul>{activeBranch.sportsList.map(sport => <li key={sport.id}>
             <span>{sport.name}</span>
             <span> - </span>
@@ -25,7 +27,7 @@ const Qwe = (
                 <span>{item.name}</span>
                 <span> - </span>
                 <span>{item.link}</span></li>)}</ul> : null}
-        </li>)}</ul>
+        </li>)}</ul></>
     ));
 }
 

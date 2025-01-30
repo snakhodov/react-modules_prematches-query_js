@@ -1,5 +1,4 @@
-import {applySnapshot, types} from 'mobx-state-tree';
-import {reaction} from 'mobx';
+import {applySnapshot, getRoot, types} from 'mobx-state-tree';
 import {Branch} from "./models/branch";
 import {BaseItem} from "./models/compose-models/base-item.js";
 import {FetchStates} from "./models/compose-models/fetch-states.js";
@@ -18,6 +17,7 @@ const ActiveItems = types
             self[type + 'Id'] = id;
         },
         setActiveItems({branchId, sportId, categoryId, tournamentId, matchId}) {
+            getRoot(self).setBranch({id: branchId});
             self.branchId = branchId ?? '1';
             self.matchId = matchId;
             self.tournamentId = tournamentId;
@@ -47,8 +47,8 @@ const PrematchesStore = types
         setBranch({id}) {
             if (!self.branches.has(id)) {
                 self.branches.set(id, {id: id});
+                self.branches.get(id).getSports();
             }
-            self.branches.get(id).getSports();
         },
     }))
     .views((self) => ({
