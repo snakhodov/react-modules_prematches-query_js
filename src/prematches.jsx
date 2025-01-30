@@ -34,7 +34,7 @@ import './App.css';
 
 const prematchesStore = initStore();
 const Prematches = ({children}) => {
-    return <Provider prematchesStore={prematchesStore}>{children}</Provider>
+    return <Provider prematchesStore={prematchesStore}><p>wqe</p>{children}</Provider>
 };
 
 export default inject('prematchesStore')(observer(Prematches));
