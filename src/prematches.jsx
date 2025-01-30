@@ -30,11 +30,13 @@ import './App.css';
 //     </BrowserRouter>;
 // }
 
-
-
 const prematchesStore = initStore();
-const Prematches = ({children}) => {
+const PrematchesQwe = inject('prematchesStore')(observer(({children}) => {
     return <Provider prematchesStore={prematchesStore}><p>wqe</p>{children}</Provider>
-};
+}));
 
-export default inject('prematchesStore')(observer(Prematches));
+const Prematches = () => {
+    return <PrematchesQwe/>
+}
+
+export default Prematches;
