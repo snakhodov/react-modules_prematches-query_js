@@ -1,5 +1,6 @@
 import React from 'react';
-import {inject, observer} from 'mobx-react';
+import {inject, observer, Provider} from 'mobx-react';
+import initStore from './store';
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 
 import Qwe from './components/prematches-query.jsx';
@@ -29,8 +30,11 @@ import './App.css';
 //     </BrowserRouter>;
 // }
 
+
+
+const prematchesStore = initStore();
 const Prematches = ({children}) => {
-    return <>{children}</>
+    return <Provider prematchesStore={prematchesStore}>{children}</Provider>
 };
 
 export default inject('prematchesStore')(observer(Prematches));
