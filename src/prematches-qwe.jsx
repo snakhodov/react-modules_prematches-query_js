@@ -32,9 +32,9 @@ import {StoreProviderComponent} from "./store-provider.jsx";
 // }
 
 const prematchesStore = initStore();
-export const PrematchesQwe = ({children}) => {
+export const PrematchesQwe = ({markUp}) => {
     return <Provider prematchesStore={prematchesStore}>
         <p>wqe</p>
-        <StoreProviderComponent markUp={children} />
+        <StoreProviderComponent markUp={markUp} />
     </Provider>
 };

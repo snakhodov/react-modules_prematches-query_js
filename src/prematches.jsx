@@ -1,7 +1,7 @@
 import {PrematchesQwe} from './prematches-qwe.jsx'
 
-const Prematches = () => {
-    return <PrematchesQwe/>
+const Prematches = ({children}) => {
+    return <PrematchesQwe markUp={children}/>
 }
 
 export default Prematches;
