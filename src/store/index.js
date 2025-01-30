@@ -17,8 +17,8 @@ const ActiveItems = types
         setActiveItem({id, type}) {
             self[type + 'Id'] = id;
         },
-        setActiveItems({branchId = '1', sportId = null, categoryId = null, tournamentId = null, matchId= null}) {
-            self.branchId = branchId;
+        setActiveItems({branchId, sportId, categoryId, tournamentId, matchId}) {
+            self.branchId = branchId ?? '1';
             self.matchId = matchId;
             self.tournamentId = tournamentId;
 
@@ -26,11 +26,14 @@ const ActiveItems = types
                 const categoryIds = categoryId.split('-');
                 self.categoryId = categoryIds[categoryIds.length - 1];
             } else {
-
+                self.categoryId = null
             }
+
             if (sportId) {
                 const sportIds = sportId.split('-');
                 self.sportId = sportIds[sportIds.length - 1];
+            } else {
+                self.sportId = null
             }
         },
     }));

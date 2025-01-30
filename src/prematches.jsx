@@ -1,7 +1,7 @@
-import {PrematchesQwe} from './prematches-qwe.jsx'
+import {PrematchesProvider} from './prematches-provider.jsx'
 
 const Prematches = ({children}) => {
-    return <PrematchesQwe markUp={children}/>
+    return <PrematchesProvider markUp={children}/>
 }
 
 export default Prematches;

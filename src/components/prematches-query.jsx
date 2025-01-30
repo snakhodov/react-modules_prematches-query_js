@@ -1,14 +1,13 @@
-import {useParams} from "react-router-dom";
 import React, {useEffect} from "react";
 import {inject, observer} from "mobx-react";
+import {useParams} from "react-router-dom";
 
 const Qwe = (
     {
         prematchesStore: {
             activeBranch,
-            activeItems,
+            activeItems
         },
-        loading
     }
 ) => {
     let {branchId, sportId, categoryId, tournamentId, matchId} = useParams();
@@ -17,7 +16,7 @@ const Qwe = (
         activeItems.setActiveItems({branchId, sportId, categoryId, tournamentId, matchId})
     }, [branchId, sportId, categoryId, tournamentId, matchId]);
 
-    return (loading ? <p>Loading...</p> : (
+    return (activeBranch.initialFetching ? <p>Loading...</p> : (
         <ul>{activeBranch.sportsList.map(sport => <li key={sport.id}>
             <span>{sport.name}</span>
             <span> - </span>
