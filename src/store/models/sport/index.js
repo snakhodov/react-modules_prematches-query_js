@@ -18,6 +18,7 @@ export const Sport = types
     .actions((self => {
         reaction(() => getRoot(self).activeItems.sportId, (sportId) => {
             if (sportId === self.id) {
+                console.log('change sportId', sportId)
                 self.getCategories();
             }
         })

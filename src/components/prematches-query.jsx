@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import {inject, observer} from "mobx-react";
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 
 const Qwe = (
     {
@@ -20,7 +20,7 @@ const Qwe = (
         <ul>{activeBranch.sportsList.map(sport => <li key={sport.id}>
             <span>{sport.name}</span>
             <span> - </span>
-            <span>{sport.link}</span>
+            <Link to={sport.link}>{sport.link}</Link>
             {sport.categoriesList.length ? <ul>{sport.categoriesList.map(item => <li key={item.id}>
                 <span>{item.name}</span>
                 <span> - </span>

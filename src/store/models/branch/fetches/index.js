@@ -8,7 +8,7 @@ export const branchFetches = (self) => ({
     sports: {
         fetchSports: flow(function* fetch({from, to} = {}) {
             let sportFetchParams = {
-                to: to || timeRangesByBranch[self.id].to(),
+                to: to || timeRangesByBranch[getRoot(self).activeBranch.id].to(),
             };
 
             if (from) {
@@ -24,7 +24,7 @@ export const branchFetches = (self) => ({
     categories: {
         fetchCategories: flow(function* fetch({ sportId, from, to }) {
             const categoryFetchParams = {
-                to: to || timeRangesByBranch[self.id].to(),
+                to: to || timeRangesByBranch[getRoot(self).activeBranch.id].to(),
                 sportId: sportId || getRoot(self).activeItems.sportId,
             };
 
@@ -42,7 +42,7 @@ export const branchFetches = (self) => ({
     tournaments: {
         fetchTournaments: flow(function* fetch({ categoryId, from, to }) {
             const tournamentFetchParams = {
-                to: to || timeRangesByBranch[self.id].to(),
+                to: to || timeRangesByBranch[getRoot(self).activeBranch.id].to(),
                 categoryId: categoryId || getRoot(self).activeItems.categoryId,
             };
 
@@ -60,7 +60,7 @@ export const branchFetches = (self) => ({
             return apiRequest({
                     url: 'popularTournaments',
                     body: {
-                        to: timeRangesByBranch[self.id].to(),
+                        to: timeRangesByBranch[getRoot(self).activeBranch.id].to(),
                     }
                 }
             );

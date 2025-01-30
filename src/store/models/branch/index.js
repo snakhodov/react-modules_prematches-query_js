@@ -16,6 +16,7 @@ export const Branch = types
     .actions((self => {
         reaction(() => getRoot(self).activeItems.branchId, (branchId) => {
             if (branchId === self.id) {
+                console.log('change branchId', branchId)
                 self.getSports();
             }
         })
