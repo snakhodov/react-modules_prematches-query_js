@@ -17,8 +17,12 @@ const Qwe = (
         activeItems.setActiveItems({branchId, sportId, categoryId, tournamentId, matchId})
     }, [branchId, sportId, categoryId, tournamentId, matchId]);
 
-    return (activeBranch.initialFetching ? <p>Loading...</p> : (<>
-        <BranchPicker/>
+    useEffect(() => {
+        activeBranch?.getSports();
+    }, [activeBranch]);
+
+    return (<><BranchPicker/>
+    { !activeBranch || activeBranch?.initialFetching ? <p>Loading...</p> : (
         <ul>{activeBranch.sportsList.map(sport => <li key={sport.id}>
             <span>{sport.name}</span>
             <span> - </span>
@@ -27,8 +31,8 @@ const Qwe = (
                 <span>{item.name}</span>
                 <span> - </span>
                 <span>{item.link}</span></li>)}</ul> : null}
-        </li>)}</ul></>
-    ));
+        </li>)}</ul>
+    )}</>);
 }
 
 export default inject('prematchesStore')(observer(Qwe));

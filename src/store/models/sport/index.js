@@ -17,7 +17,7 @@ export const Sport = types
     .extend((self) => ({actions: {...branchFetches(self).categories}}))
     .actions((self => {
         reaction(() => getRoot(self).activeItems.sportId, (sportId) => {
-            if (sportId === self.id) {
+            if (sportId === self.id && getRoot(self).activeBranch?.id === getParent(self, 2)?.id) {
                 console.log('change sportId', sportId)
                 self.getCategories();
             }

@@ -12,8 +12,8 @@ export const Tournament = types
     })
     .extend((self) => ({actions: {...branchFetches(self).tournaments}}))
     .actions((self => {
-        reaction(() => getRoot(self).activeItems.tournamentId, (tournamentId) => {
-            //if (tournamentId === self.id) self.getMatches();
+        reaction(() => getRoot(self).activeBranch.tournamentId, (tournamentId) => {
+            //if (tournamentId === self.id && getRoot(self).activeItem?.id === getParent(self, 6)?.id) self.getMatches();
         })
 
         return {

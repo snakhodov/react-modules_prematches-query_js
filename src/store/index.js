@@ -17,7 +17,6 @@ const ActiveItems = types
             self[type + 'Id'] = id;
         },
         setActiveItems({branchId, sportId, categoryId, tournamentId, matchId}) {
-            getRoot(self).setBranch({id: branchId});
             self.branchId = branchId ?? '1';
             self.matchId = matchId;
             self.tournamentId = tournamentId;
@@ -47,7 +46,6 @@ const PrematchesStore = types
         setBranch({id}) {
             if (!self.branches.has(id)) {
                 self.branches.set(id, {id: id});
-                self.branches.get(id).getSports();
             }
         },
     }))
@@ -62,8 +60,11 @@ let prematchesStore = null;
 const initStore = (snapshot = null) => {
     if (prematchesStore === null) {
         prematchesStore = PrematchesStore.create();
-        prematchesStore.activeItems.setActiveItem({id: '1', type: 'branch'});
         prematchesStore.setBranch({id: '1'});
+        prematchesStore.setBranch({id: '2'});
+        prematchesStore.setBranch({id: '3'});
+        prematchesStore.setBranch({id: '4'});
+        prematchesStore.setBranch({id: '5'});
     }
     if (snapshot) applySnapshot(prematchesStore, snapshot);
     return prematchesStore;

@@ -15,11 +15,13 @@ export const Branch = types
     .extend((self) => ({actions: {...branchFetches(self).sports}}))
     .actions((self => {
         reaction(() => getRoot(self).activeItems.branchId, (branchId) => {
-            if (branchId === self.id) {
-                console.log('change branchId', branchId)
-                self.getSports();
-            }
+            // if (branchId === self.id) {
+            //     console.log('change branchId', branchId)
+            //     self.getSports();
+            // }
         })
+
+        console.log(getRoot(self).activeItems.branchId)
 
         return {
             setSport({i, mc, o, pid, n}) {
