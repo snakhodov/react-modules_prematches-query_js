@@ -4,7 +4,7 @@ import {reaction} from 'mobx';
 import {Sport} from "../sport";
 import {baseItemFetches} from "../compose-models/base-item-fetches";
 import {refreshTime} from "../../configs/refresh-time.js";
-import orderBy from "lodash/orderBy.js";
+import {orderBy} from "../../../utils/order-by.js";
 
 export const TimeRange = types
     .model('TimeRange', {
@@ -128,14 +128,41 @@ export const TimeRange = types
                             } else {
                                 const ids = [];
                                 Object.keys(res.data).forEach((sportId) => {
-                                    console.log(res.data[sportId])
-                                    // const id = sportId.toString();
-                                    // if (getRoot(self).sports.has(id)) {
-                                    //     getRoot(self).sports.get(id).updateItem({});
-                                    // } else {
-                                    //     getRoot(self).setItem(sport, 'sports');
-                                    // }
-
+                                    const sport = {
+                                        i: sportId.toString(),
+                                        n: res.data[sportId].n
+                                    };
+                                    if (getRoot(self).sports.has(sport.i)) {
+                                        getRoot(self).sports.get(sport.i).updateItem(sport);
+                                    } else {
+                                        getRoot(self).setItem(sport, 'sports');
+                                    }
+                                    const categories = res.data[sportId].c;
+                                    Object.keys(categories).forEach((categoryId) => {
+                                        const category = {
+                                            i: categoryId.toString(),
+                                            n: categories[categoryId].n,
+                                            o: categories[categoryId].o
+                                        };
+                                        if (getRoot(self).categories.has(category.i)) {
+                                            getRoot(self).categories.get(category.i).updateItem(category);
+                                        } else {
+                                            getRoot(self).setItem(category, 'categories');
+                                        }
+                                        const tournaments = categories[categoryId].t;
+                                        Object.keys(tournaments).forEach((tournamentId) => {
+                                            const tournament = {
+                                                i: tournamentId.toString(),
+                                                n: tournaments[tournamentId].n,
+                                                o: tournaments[tournamentId].o
+                                            };
+                                            if (getRoot(self).tournaments.has(tournament.i)) {
+                                                getRoot(self).tournaments.get(tournament.i).updateItem(tournament);
+                                            } else {
+                                                getRoot(self).setItem(tournament, 'tournaments');
+                                            }
+                                        })
+                                    })
                                 })
                                 // sportsData.forEach((sport) => {
                                 //

@@ -40,7 +40,11 @@ const TournamentItem = types
     }))
     .views((self) => ({
         get link() {
-            return getRoot(self).activeCategory.link + '/' + self.id;
+            let parentLink = getRoot(self).activeCategory.link;
+            if (getRoot(self).activeItems.matchId || getRoot(self).activeItems.tournamentId !== self.id) {
+                parentLink = parentLink + '/' + self.id;
+            }
+            return parentLink;
         }
     }));
 

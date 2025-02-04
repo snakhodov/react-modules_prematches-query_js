@@ -6,7 +6,7 @@ import {BaseItem} from "../compose-models/base-item.js";
 import {baseItemFetches} from "../compose-models/base-item-fetches";
 import {Category} from "../category/index.js";
 import {refreshTime} from "../../configs/refresh-time.js";
-import orderBy from "lodash/orderBy.js";
+import {orderBy} from "../../../utils/order-by.js";
 import {Errors} from "../compose-models/errors.js";
 import {DataByTimeRange} from "../compose-models/data-by-time-range.js";
 
@@ -110,7 +110,11 @@ const SportItem = types
             }, []);
         },
         get link() {
-            return getRoot(self).activeTimeRange.link + '/' + self.id;
+            let parentLink = getRoot(self).activeTimeRange.link;
+            if (getRoot(self).activeItems.categoryId || getRoot(self).activeItems.sportId !== self.id) {
+                parentLink = parentLink + '/' + self.id;
+            }
+            return parentLink;
         }
     }));
 

@@ -6,7 +6,7 @@ import {BaseItem} from "../compose-models/base-item.js";
 import {baseItemFetches} from "../compose-models/base-item-fetches";
 import {refreshTime} from "../../configs/refresh-time.js";
 import {Tournament} from "../tourmanent/index.js";
-import orderBy from "lodash/orderBy.js";
+import {orderBy} from "../../../utils/order-by.js";
 import {Errors} from "../compose-models/errors.js";
 import {DataByTimeRange} from "../compose-models/data-by-time-range.js";
 
@@ -109,7 +109,11 @@ const CategoryItem = types
             }, []);
         },
         get link() {
-            return getRoot(self).activeSport.link + '/' + self.id;
+            let parentLink = getRoot(self).activeSport.link;
+            if (getRoot(self).activeItems.tournamentId || getRoot(self).activeItems.categoryId !== self.id) {
+                parentLink = parentLink + '/' + self.id;
+            }
+            return parentLink;
         }
     }));
 
