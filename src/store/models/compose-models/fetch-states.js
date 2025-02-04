@@ -1,7 +1,7 @@
 import {types} from 'mobx-state-tree';
 
 export const FetchStates = types
-    .model('WithFlags', {
+    .model('FetchStates', {
         lastFetchTime: types.maybeNull(types.Date),
         isWaitingUpdate: false,
         isFetching: false,

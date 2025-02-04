@@ -1,4 +1,5 @@
 import {getRoot, types} from 'mobx-state-tree';
+import {refreshTime} from "../../configs/refresh-time.js";
 
 export const BaseItem = types
     .model('BaseItem', {
@@ -22,5 +23,24 @@ export const BaseItem = types
             }
             const range = self.dataByTimeRange.get(timeRangeId);
             range.setEventsCount({matchCount, outrightCount});
+        },
+        setDataRefsByTimeRange(ids) {
+            const timeRangeId = getRoot(self).activeTimeRange.id;
+            if (!self.dataByTimeRange.has(timeRangeId)) {
+                self.dataByTimeRange.set(timeRangeId, {id: timeRangeId})
+            }
+            const range = self.dataByTimeRange.get(timeRangeId);
+            range.setChildrenRefs(ids);
+        },
+        setUpdate({timeLeft, instance, getter}) {
+            if (!self.isWaitingUpdate) {
+                self.setWaitingUpdate(true);
+                const timeoutName = '__prematches_' + instance + 'Updater';
+                clearTimeout(window[timeoutName]);
+                window[timeoutName] = setTimeout(
+                    () => getter(),
+                    timeLeft ?? refreshTime[instance]
+                );
+            }
         },
     }))

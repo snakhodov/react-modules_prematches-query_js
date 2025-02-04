@@ -39,7 +39,6 @@ export const baseItemFetches = (self) => ({
             );
         }),
     },
-
     tournaments: {
         fetchTournaments: flow(function* fetch({ categoryId, from, to }) {
             const tournamentFetchParams = {
@@ -67,4 +66,15 @@ export const baseItemFetches = (self) => ({
             );
         }),
     },
+    matches: {
+        fetchTopMatches: flow(function* fetch({}) {
+            return apiRequest({
+                    url: 'topMatches',
+                    body: {
+                        to: timeRangesConfig[getRoot(self).activeTimeRange.id].to(),
+                    }
+                }
+            );
+        }),
+    }
 });

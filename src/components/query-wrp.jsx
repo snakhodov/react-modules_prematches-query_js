@@ -1,9 +1,9 @@
-
 import {inject, observer} from "mobx-react";
 import {NavLink, useParams} from "react-router-dom";
-import {useEffect} from "react";
+import React, {useEffect} from "react";
 
 import './_prematch-menu.scss';
+import {BranchPicker} from "./branch-picker.jsx";
 
 
 const qwe = {
@@ -30,9 +30,9 @@ const MenuItem = (
                     </span>
                 </NavLink>
             </li>
-            { activeItems[`${storeItemName}Id`] === storeItem.id ?
+            {activeItems[`${storeItemName}Id`] === storeItem.id ?
                 <ul>
-                    { fetching ?
+                    {fetching ?
                         'horizontal loading'
                         :
                         storeItem[`${qwe[storeItemName]}List`]?.map(item => {
@@ -74,22 +74,23 @@ const QueryWrp = (
         activeTimeRange?.getSports();
     }, [activeTimeRange]);
 
-    return (
-        <ul className="prematch-menu">
-            {prematchesStore.activeTimeRange?.initialFetching ?
-                'loading'
-                :
-                sports?.map(sport =>
-                    <MenuItem
-                        key={sport.id}
-                        storeItem={sport}
-                        activeItems={activeItems}
-                        storeItemName="sport"
-                        fetching={sport.initialFetching}
-                    />
-                )
-            }
-        </ul>
+    return (<><BranchPicker/>
+            <ul className="prematch-menu">
+                {prematchesStore.activeTimeRange?.initialFetching ?
+                    'loading'
+                    :
+                    sports?.map(sport =>
+                        <MenuItem
+                            key={sport.id}
+                            storeItem={sport}
+                            activeItems={activeItems}
+                            storeItemName="sport"
+                            fetching={sport.initialFetching}
+                        />
+                    )
+                }
+            </ul>
+        </>
     );
 };
 

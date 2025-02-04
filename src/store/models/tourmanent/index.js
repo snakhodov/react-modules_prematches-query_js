@@ -4,6 +4,7 @@ import {reaction} from 'mobx';
 import {FetchStates} from "../compose-models/fetch-states.js";
 import {BaseItem} from "../compose-models/base-item.js";
 import {baseItemFetches} from "../compose-models/base-item-fetches";
+import {Errors} from "../compose-models/errors.js";
 
 const TournamentDataByTimeRange = types
     .model('TournamentDataByTimeRange', {
@@ -43,4 +44,4 @@ const TournamentItem = types
         }
     }));
 
-export const Tournament = types.compose(TournamentItem, BaseItem, FetchStates);
+export const Tournament = types.compose(TournamentItem, BaseItem, FetchStates, Errors);
