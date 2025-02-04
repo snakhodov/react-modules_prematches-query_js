@@ -1,27 +1,46 @@
-import {getParent, getRoot, types} from 'mobx-state-tree';
+import {getRoot, types} from 'mobx-state-tree';
 import {reaction} from 'mobx';
 
 import {FetchStates} from "../compose-models/fetch-states.js";
 import {BaseItem} from "../compose-models/base-item.js";
-import {branchFetches} from "../branch/fetches/index.js";
+import {baseItemFetches} from "../compose-models/base-item-fetches";
 
-export const Tournament = types
-    .model('Tournament', {
+const TournamentDataByTimeRange = types
+    .model('TournamentDataByTimeRange', {
         id: types.identifier,
-        tournaments: types.map(types.compose(BaseItem, FetchStates))
+        matchCount: 0,
+        outrightCount: 0,
+        // matches: types.array(types.reference(Match))
     })
-    .extend((self) => ({actions: {...branchFetches(self).tournaments}}))
+    .actions((self => ({
+        setEventsCount({matchCount, outrightCount}) {
+            self.matchCount = matchCount || 0;
+            self.outrightCount = outrightCount || 0;
+        },
+        setMatchesRefs(ids) {
+            //self.matches = ids;
+        },
+    })))
+
+const TournamentItem = types
+    .model('TournamentItem', {
+        id: types.identifier,
+        dataByTimeRange: types.map(TournamentDataByTimeRange)
+    })
+    .extend((self) => ({actions: {...baseItemFetches(self).tournaments}}))
     .actions((self => {
-        reaction(() => getRoot(self).activeBranch.tournamentId, (tournamentId) => {
-            //if (tournamentId === self.id && getRoot(self).activeItem?.id === getParent(self, 6)?.id) self.getMatches();
+        reaction(() => getRoot(self).activeItems.tournamentId, (tournamentId) => {
+            if (tournamentId === self.id && getRoot(self).activeCategory.tournamentsList.find(tournament => tournament.id === self.id)) {
+                //self.getMatches();
+            }
         })
 
-        return {
-
-        }
+        return {}
     }))
     .views((self) => ({
         get link() {
-            return getParent(self, 2).link + '/' + self.id;
+            return getRoot(self).activeCategory.link + '/' + self.id;
         }
-    }))
+    }));
+
+export const Tournament = types.compose(TournamentItem, BaseItem, FetchStates);

@@ -15,5 +15,8 @@ export const FetchStates = types
         },
         setFetching(flag) {
             self.isFetching = flag;
-        }
+        },
+        setWaitingUpdate(flag) {
+            self.isWaitingUpdate = flag;
+        },
     }))

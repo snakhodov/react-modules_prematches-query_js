@@ -1,0 +1,43 @@
+
+
+.branch-picker {
+    padding: 20px;
+}
+
+.prematch-menu {
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: -2px;
+
+    .prematch-menu__item {
+        padding: 10px;
+        border-bottom: 2px solid #cecece;
+        background-color: #777777;
+        color: white;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .prematch-menu__item--category {
+        padding-left: 25px;
+    }
+
+    .prematch-menu__item--tournament {
+        padding-left: 40px;
+    }
+
+    .prematch-menu__item-link {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .prematch-menu__item-count {
+        padding: 2px 5px;
+    }
+
+    .prematch-menu__item-count--sport {
+        background-color: #e9a317;
+        border-radius: 3px;
+    }
+}

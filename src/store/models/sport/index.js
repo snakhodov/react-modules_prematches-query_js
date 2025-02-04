@@ -1,39 +1,54 @@
-import {getParent, getRoot, types} from 'mobx-state-tree';
-import {reaction, values} from 'mobx';
+import {getRoot, types} from 'mobx-state-tree';
+import {reaction} from 'mobx';
 
 import {FetchStates} from "../compose-models/fetch-states.js";
 import {BaseItem} from "../compose-models/base-item.js";
-import {branchFetches} from "../branch/fetches/index.js";
+import {baseItemFetches} from "../compose-models/base-item-fetches";
 import {Category} from "../category/index.js";
 import {refreshTime} from "../../configs/refresh-time.js";
+import {orderBy} from "lodash/collection.js";
 
-export const Sport = types
-    .model('Sport', {
+
+const CategoriesByTimeRange = types
+    .model('CategoriesByTimeRange', {
+        id: types.identifier,
+        matchCount: 0,
+        outrightCount: 0,
+        categories: types.array(types.reference(Category))
+    })
+    .actions((self => ({
+        setEventsCount({matchCount, outrightCount}) {
+            self.matchCount = matchCount || 0;
+            self.outrightCount = outrightCount || 0;
+        },
+        setCategoriesRefs(ids) {
+            self.categories = ids;
+        },
+    })))
+
+const SportItem = types
+    .model('SportItem', {
         id: types.identifier,
         parentId: types.maybeNull(types.string),
-        matchCount: types.maybeNull(types.integer),
-        categories: types.map(types.compose(Category, BaseItem, FetchStates))
+        dataByTimeRange: types.map(CategoriesByTimeRange),
     })
-    .extend((self) => ({actions: {...branchFetches(self).categories}}))
+    .extend((self) => ({actions: {...baseItemFetches(self).categories}}))
     .actions((self => {
         reaction(() => getRoot(self).activeItems.sportId, (sportId) => {
-            if (sportId === self.id && getRoot(self).activeBranch?.id === getParent(self, 2)?.id) {
-                console.log('change sportId', sportId)
+            if (sportId === self.id && getRoot(self).activeTimeRange.sports.find(sport => sport.id === self.id)) {
                 self.getCategories();
             }
         })
 
         return {
-            setCategory({ i, mc, o, pid, n }) {
-                self.categories.put({
-                    id: i.toString(),
-                    matchCount: mc,
-                    order: o,
-                    parentId: pid.toString(),
-                    name: n,
-                })
+            setCategoryRefsByTimeRange(ids) {
+                const timeRangeId = getRoot(self).activeTimeRange.id;
+                if (!self.dataByTimeRange.has(timeRangeId)) {
+                    self.dataByTimeRange.set(timeRangeId, {id: timeRangeId})
+                }
+                const range = self.dataByTimeRange.get(timeRangeId);
+                range.setCategoriesRefs(ids);
             },
-
             getCategories() {
                 if (
                     !self.lastFetchTime ||
@@ -44,19 +59,27 @@ export const Sport = types
                         if (!res || res?.error) {
                             console.log('error');
                         } else {
-                            res.data.forEach((category) => {
+                            const data = orderBy(
+                                res.data,
+                                ['o', 'n'],
+                                ['asc', 'asc']
+                            )
+                            const ids = [];
+                            data.forEach((category) => {
                                 const id = category.i.toString();
-                                if (self.categories.has(id)) {
-                                    self.categories.get(id).update(category)
+                                if (getRoot(self).categories.has(id)) {
+                                    getRoot(self).categories.get(id).update(category)
                                 } else {
-                                    self.setCategory(category)
+                                    getRoot(self).setItem(category, 'categories')
                                 }
+                                ids.push(id);
                             })
+                            self.setCategoryRefsByTimeRange(ids);
                         }
                         self.setLastFetchTime();
                         self.setInitialFetching(false);
-                        if (self.activeCategory) {
-                            self.activeCategory.getTournaments();
+                        if (getRoot(self).activeCategory) {
+                            getRoot(self).activeCategory.getTournaments();
                         }
                     })
                     self.setFetching(false);
@@ -66,19 +89,23 @@ export const Sport = types
     }))
     .views((self) => ({
         get categoriesList() {
-            return values(self.categories).reduce((acc, category) => {
-                if (category.matchCount) {
-                    return [...acc, category]
-                } else {
-                    return acc
-                }
+            const timeRangeId = getRoot(self).activeTimeRange.id;
+            const range = self.dataByTimeRange.get(timeRangeId);
+            return range.categories.reduce((acc, category) => {
+                const matchCount = category.dataByTimeRange.get(timeRangeId).matchCount;
+                const outrightCount = category.dataByTimeRange.get(timeRangeId).outrightCount;
+                return [...acc, {
+                    ...category,
+                    matchCount,
+                    outrightCount,
+                    tournamentsList: category.tournamentsList,
+                    link: category.link,
+                }]
             }, []);
         },
-        get activeCategory() {
-            const activeCategoryId = getRoot(self).activeItems.categoryId;
-            return self.categories.get(activeCategoryId);
-        },
         get link() {
-            return getParent(self, 2).link + '/' + self.id;
+            return getRoot(self).activeTimeRange.link + '/' + self.id;
         }
-    }))
+    }));
+
+export const Sport = types.compose(SportItem, BaseItem, FetchStates);

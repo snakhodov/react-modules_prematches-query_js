@@ -1,35 +1,53 @@
-import {getParent, getRoot, types} from 'mobx-state-tree';
-import {reaction, values} from 'mobx';
+import {getRoot, types} from 'mobx-state-tree';
+import {reaction} from 'mobx';
 
 import {FetchStates} from "../compose-models/fetch-states.js";
 import {BaseItem} from "../compose-models/base-item.js";
-import {branchFetches} from "../branch/fetches/index.js";
+import {baseItemFetches} from "../compose-models/base-item-fetches";
 import {refreshTime} from "../../configs/refresh-time.js";
 import {Tournament} from "../tourmanent/index.js";
+import {orderBy} from "lodash/collection.js";
 
-export const Category = types
-    .model('Category', {
+
+const TournamentsByTimeRange = types
+    .model('TournamentsByTimeRange', {
+        id: types.identifier,
+        matchCount: 0,
+        outrightCount: 0,
+        tournaments: types.array(types.reference(Tournament))
+    })
+    .actions((self => ({
+        setEventsCount({matchCount, outrightCount}) {
+            self.matchCount = matchCount || 0;
+            self.outrightCount = outrightCount || 0;
+        },
+        setTournamentsRefs(ids) {
+            self.tournaments = ids;
+        },
+    })))
+
+const CategoryItem = types
+    .model('CategoryItem', {
         id: types.identifier,
         parentId: types.maybeNull(types.string),
-        tournaments: types.map(types.compose(Tournament, BaseItem, FetchStates))
+        dataByTimeRange: types.map(TournamentsByTimeRange)
     })
-    .extend((self) => ({actions: {...branchFetches(self).tournaments}}))
+    .extend((self) => ({actions: {...baseItemFetches(self).tournaments}}))
     .actions((self => {
         reaction(() => getRoot(self).activeItems.categoryId, (categoryId) => {
-            if (categoryId === self.id && getRoot(self).activeBranch?.id === getParent(self, 4)?.id) {
-                console.log('change categoryId', categoryId)
+            if (categoryId === self.id && getRoot(self).activeSport.categoriesList.find(category => category.id === self.id)) {
                 self.getTournaments();
             }
         })
 
         return {
-            setTournament({ i, mc, o, n }) {
-                self.tournaments.put({
-                    id: i.toString(),
-                    matchCount: mc,
-                    order: o,
-                    name: n,
-                })
+            setTournamentRefsByTimeRange(ids) {
+                const timeRangeId = getRoot(self).activeTimeRange.id;
+                if (!self.dataByTimeRange.has(timeRangeId)) {
+                    self.dataByTimeRange.set(timeRangeId, {id: timeRangeId})
+                }
+                const range = self.dataByTimeRange.get(timeRangeId);
+                range.setTournamentsRefs(ids);
             },
 
             getTournaments() {
@@ -42,19 +60,27 @@ export const Category = types
                         if (!res || res?.error) {
                             console.log('error');
                         } else {
-                            res.data.forEach((tournament) => {
+                            const data = orderBy(
+                                res.data,
+                                ['o', 'n'],
+                                ['asc', 'asc']
+                            )
+                            const ids = [];
+                            data.forEach((tournament) => {
                                 const id = tournament.i.toString();
-                                if (self.tournaments.has(id)) {
-                                    self.tournaments.get(id).update(tournament)
+                                if (getRoot(self).tournaments.has(id)) {
+                                    getRoot(self).tournaments.get(id).update(tournament)
                                 } else {
-                                    self.setTournament(tournament)
+                                    getRoot(self).setItem(tournament, 'tournaments')
                                 }
+                                ids.push(id);
                             })
+                            self.setTournamentRefsByTimeRange(ids);
                         }
                         self.setLastFetchTime();
                         self.setInitialFetching(false);
-                        if (self.activeTournament) {
-                            // self.activeTournament.getMatches();
+                        if (getRoot(self).activeTournament) {
+                            // getRoot(self).activeTournament.getMatches();
                         }
                     })
                     self.setFetching(false);
@@ -64,19 +90,21 @@ export const Category = types
     }))
     .views((self) => ({
         get tournamentsList() {
-            return values(self.tournaments).reduce((acc, category) => {
-                if (category.matchCount) {
-                    return [...acc, category]
-                } else {
-                    return acc
-                }
+            const timeRangeId = getRoot(self).activeTimeRange.id;
+            const range = self.dataByTimeRange.get(timeRangeId);
+            return range.tournaments.reduce((acc, tournament) => {
+                const matchCount = tournament.dataByTimeRange.get(timeRangeId).matchCount;
+                const outrightCount = tournament.dataByTimeRange.get(timeRangeId).outrightCount;
+                return [...acc, {
+                    ...tournament,
+                    matchCount,
+                    outrightCount
+                }]
             }, []);
         },
-        get activeTournament() {
-            const activeTournamentId = getRoot(self).activeItems.tournamentId;
-            return self.tournaments.get(activeTournamentId);
-        },
         get link() {
-            return getParent(self, 2).link + '/' + self.id;
+            return getRoot(self).activeSport.link + '/' + self.id;
         }
-    }))
+    }));
+
+export const Category = types.compose(CategoryItem, BaseItem, FetchStates);

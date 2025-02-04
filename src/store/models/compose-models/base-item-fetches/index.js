@@ -1,14 +1,14 @@
 import { getRoot, flow } from 'mobx-state-tree';
 
-import { timeRangesByBranch } from '../../../configs/time-ranges-by-branch.js';
+import { timeRangesConfig } from '../../../configs/time-ranges.js';
 import {apiRequest} from "../../../../common/api/index.js";
 
 
-export const branchFetches = (self) => ({
+export const baseItemFetches = (self) => ({
     sports: {
         fetchSports: flow(function* fetch({from, to} = {}) {
             let sportFetchParams = {
-                to: to || timeRangesByBranch[getRoot(self).activeBranch.id].to(),
+                to: to || timeRangesConfig[getRoot(self).activeTimeRange.id].to(),
             };
 
             if (from) {
@@ -24,7 +24,7 @@ export const branchFetches = (self) => ({
     categories: {
         fetchCategories: flow(function* fetch({ sportId, from, to }) {
             const categoryFetchParams = {
-                to: to || timeRangesByBranch[getRoot(self).activeBranch.id].to(),
+                to: to || timeRangesConfig[getRoot(self).activeTimeRange.id].to(),
                 sportId: sportId || getRoot(self).activeItems.sportId,
             };
 
@@ -39,10 +39,11 @@ export const branchFetches = (self) => ({
             );
         }),
     },
+
     tournaments: {
         fetchTournaments: flow(function* fetch({ categoryId, from, to }) {
             const tournamentFetchParams = {
-                to: to || timeRangesByBranch[getRoot(self).activeBranch.id].to(),
+                to: to || timeRangesConfig[getRoot(self).activeTimeRange.id].to(),
                 categoryId: categoryId || getRoot(self).activeItems.categoryId,
             };
 
@@ -60,7 +61,7 @@ export const branchFetches = (self) => ({
             return apiRequest({
                     url: 'popularTournaments',
                     body: {
-                        to: timeRangesByBranch[getRoot(self).activeBranch.id].to(),
+                        to: timeRangesConfig[getRoot(self).activeTimeRange.id].to(),
                     }
                 }
             );

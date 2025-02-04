@@ -8,7 +8,7 @@ const allTo = () =>
         new Date(new Date().setFullYear(new Date().getFullYear() + 1)).setSeconds(0)
     );
 
-export const timeRangesByBranch = {
+export const timeRangesConfig = {
     1: {
         to: () => Math.floor(allTo().setDate(allTo().getDate() - 1) / 1000),
     },

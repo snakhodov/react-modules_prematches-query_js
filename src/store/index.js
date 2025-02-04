@@ -1,12 +1,15 @@
-import {applySnapshot, getRoot, types} from 'mobx-state-tree';
-import {Branch} from "./models/branch";
+import {applySnapshot, types} from 'mobx-state-tree';
+import {TimeRange} from "./models/time-range";
 import {BaseItem} from "./models/compose-models/base-item.js";
 import {FetchStates} from "./models/compose-models/fetch-states.js";
+import {Sport} from "./models/sport";
+import {Category} from "./models/category";
+import {Tournament} from "./models/tourmanent";
 
 
 const ActiveItems = types
     .model('ActiveItems', {
-        branchId: types.maybeNull(types.string),
+        timeRangeId: types.maybeNull(types.string),
         sportId: types.maybeNull(types.string),
         categoryId: types.maybeNull(types.string),
         tournamentId: types.maybeNull(types.string),
@@ -16,8 +19,8 @@ const ActiveItems = types
         setActiveItem({id, type}) {
             self[type + 'Id'] = id;
         },
-        setActiveItems({branchId, sportId, categoryId, tournamentId, matchId}) {
-            self.branchId = branchId ?? '1';
+        setActiveItems({timeRangeId, sportId, categoryId, tournamentId, matchId}) {
+            self.timeRangeId = timeRangeId ?? '1';
             self.matchId = matchId;
             self.tournamentId = tournamentId;
 
@@ -39,19 +42,43 @@ const ActiveItems = types
 
 const PrematchesStore = types
     .model('PrematchesStore', {
-        branches: types.map(types.compose(Branch, BaseItem, FetchStates)),
+        timeRanges: types.map(types.compose(TimeRange, BaseItem, FetchStates)),
+        sports: types.map(Sport),
+        categories: types.map(Category),
+        tournaments: types.map(Tournament),
         activeItems: types.optional(ActiveItems, {})
     })
     .actions((self) => ({
-        setBranch({id}) {
-            if (!self.branches.has(id)) {
-                self.branches.set(id, {id: id});
+        setTimeRange({id}) {
+            if (!self.timeRanges.has(id)) {
+                self.timeRanges.set(id, {id: id});
             }
+        },
+        setItem({i, mc, oc, o, pid, n}, type) {
+            const item = {
+                id: i.toString(),
+                order: o,
+                name: n,
+            };
+            if (pid || pid === null) {
+                self.parentId = pid ? pid.toString() : null;
+            }
+            const newItem = self[type].put(item);
+            newItem.setEventsCount({matchCount: mc, outrightCount: oc});
         },
     }))
     .views((self) => ({
-        get activeBranch() {
-            return self.branches.get(self.activeItems.branchId);
+        get activeTimeRange() {
+            return self.timeRanges.get(self.activeItems.timeRangeId);
+        },
+        get activeSport() {
+            return self.sports.get(self.activeItems.sportId);
+        },
+        get activeCategory() {
+            return self.categories.get(self.activeItems.categoryId);
+        },
+        get activeTournament() {
+            return self.tournaments.get(self.activeItems.tournamentId);
         },
     }))
 ;
@@ -60,11 +87,11 @@ let prematchesStore = null;
 const initStore = (snapshot = null) => {
     if (prematchesStore === null) {
         prematchesStore = PrematchesStore.create();
-        prematchesStore.setBranch({id: '1'});
-        prematchesStore.setBranch({id: '2'});
-        prematchesStore.setBranch({id: '3'});
-        prematchesStore.setBranch({id: '4'});
-        prematchesStore.setBranch({id: '5'});
+        prematchesStore.setTimeRange({id: '1'});
+        prematchesStore.setTimeRange({id: '2'});
+        prematchesStore.setTimeRange({id: '3'});
+        prematchesStore.setTimeRange({id: '4'});
+        prematchesStore.setTimeRange({id: '5'});
     }
     if (snapshot) applySnapshot(prematchesStore, snapshot);
     return prematchesStore;

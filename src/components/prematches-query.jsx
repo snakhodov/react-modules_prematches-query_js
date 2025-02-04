@@ -6,24 +6,24 @@ import {BranchPicker} from "./branch-picker.jsx";
 const Qwe = (
     {
         prematchesStore: {
-            activeBranch,
+            activeTimeRange,
             activeItems
         },
     }
 ) => {
-    let {branchId, sportId, categoryId, tournamentId, matchId} = useParams();
+    let {timeRangeId, sportId, categoryId, tournamentId, matchId} = useParams();
 
     useEffect(() => {
-        activeItems.setActiveItems({branchId, sportId, categoryId, tournamentId, matchId})
-    }, [branchId, sportId, categoryId, tournamentId, matchId]);
+        activeItems.setActiveItems({timeRangeId, sportId, categoryId, tournamentId, matchId})
+    }, [timeRangeId, sportId, categoryId, tournamentId, matchId]);
 
     useEffect(() => {
-        activeBranch?.getSports();
-    }, [activeBranch]);
+        activeTimeRange?.getSports();
+    }, [activeTimeRange]);
 
     return (<><BranchPicker/>
-    { !activeBranch || activeBranch?.initialFetching ? <p>Loading...</p> : (
-        <ul>{activeBranch.sportsList.map(sport => <li key={sport.id}>
+    { !activeTimeRange || activeTimeRange?.initialFetching ? <p>Loading...</p> : (
+        <ul>{activeTimeRange.sportsList.map(sport => <li key={sport.id}>
             <span>{sport.name}</span>
             <span> - </span>
             <Link to={sport.link}>{sport.link}</Link>
