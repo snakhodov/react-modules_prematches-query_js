@@ -14,11 +14,10 @@ export const ActiveItems = types
         setGlobalError({message} = {}) {
             self.globalError = message ?? 'GLOBAL_ERROR'
         },
-        setActiveItem({id, type}) {
-            self[type + 'Id'] = id;
-        },
         setActiveItems({timeRangeId, sportId, categoryId, tournamentId, matchId}) {
-            self.timeRangeId = timeRangeId ?? '1';
+            if (self.timeRangeId !== timeRangeId) {
+                self.timeRangeId = timeRangeId ?? '1';
+            }
             self.matchId = matchId;
             self.tournamentId = tournamentId;
 
